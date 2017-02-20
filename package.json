@@ -1,0 +1,19 @@
+{
+  "name": "breakout",
+  "version": "0.0.1",
+  "description": "Modified version of MDN Breakout game",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xarxziux/breakout.git"
+  },
+  "author": "Delaney, Alan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xarxziux/breakout/issues"
+  },
+  "homepage": "https://github.com/xarxziux/breakout#readme"
+}
