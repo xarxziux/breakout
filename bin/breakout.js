@@ -1,6 +1,7 @@
 /* globals window: false */
+/* globals $: false */
 
-window.breakout = function () {
+window.breakout = function (brickRows, brickColumns) {
     
     let canvas = document.getElementById('myCanvas');
     let ctx = canvas.getContext('2d');
@@ -17,7 +18,7 @@ window.breakout = function () {
         
         x: (canvas.width - 10) / 2,
         y: (canvas.height) - 10,
-        width: 50,
+        width: 75,
         height: 10
         
     };
@@ -25,8 +26,8 @@ window.breakout = function () {
     let rightPressed = false;
     let leftPressed = false;
     
-    let brickRows= 8;
-    let brickColumns = 15;
+    // let brickRows= bRows;
+    // let brickColumns = 7;
     let brickPadding = 10;
     let brickOffsetTop = 30;
     let brickOffsetLeft = 30;
@@ -107,26 +108,6 @@ window.breakout = function () {
         } else if (leftPressed && paddle.x > 0) {
             paddle.x -= 7;
         }
-        
-        switch (bot (ball, paddle)) {
-            
-            case -1:
-                
-                if (paddle.x > 0) {
-                    
-                    paddle.x -= 7;
-                    break;
-                }
-                
-            case 1:
-                
-                if (paddle.x + paddle.width < canvas.width) {
-                    
-                    paddle.x += 7;
-                    break;
-                    
-                }
-        }
     }
     
     
@@ -150,7 +131,7 @@ window.breakout = function () {
     }
     
     
-    function mouseMoveHandler(e) {
+    function mouseMoveHandler (e) {
         
         let relativeX = e.clientX - canvas.offsetLeft;
         
@@ -223,15 +204,6 @@ function drawScore (ctx, score) {
     ctx.font = '16px Arial';
     ctx.fillStyle = '#0095DD';
     ctx.fillText('Score: ' + score, 8, 20);
-    
-}
-
-
-function bot (ball, paddle) {
-    
-    if (ball.x + 7 < paddle.x + paddle.width / 2) return -1;
-    if (ball.x + -7 > paddle.x + paddle.width / 2) return 1;
-    return 0;
     
 }
 

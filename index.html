@@ -3,13 +3,62 @@
 <head>
   <meta charset="utf-8" />
   <title>MDN Breakout Tutorial</title>
-  <style>
-    * { padding: 0; margin: 0; }
-    canvas { background: #eee; display: block; margin: 0 auto; }
-  </style>
-  <script src="./breakout.js"></script>
-</head>
-<body onload="breakout();">
-<canvas id="myCanvas" width="800" height="600"></canvas>
-</body>
-</html>
+  <link rel="stylesheet" type="text/css" href="./src/css/miecos.css">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+    /* globals $: false */
+    
+    function initUI () {
+      $ (".rows" ).spinner ({
+        numberFormat: "n",
+        min: 1,
+        max: 10
+      });
+      $ (".columns" ).spinner ({
+        numberFormat: "n",
+        min: 3,
+        max: 30
+      });
+      /* $ (function() {
+        $ ("input").checkboxradio();
+      }); */
+    }
+    
+    function startMain () {
+      
+      window.breakout (
+        
+        $ (".rows").spinner ("value"),
+        $ (".columns" ).spinner ("value")
+        
+      );
+      
+    } 
+  </script>
+  
+  <script src="./bin/breakout.js"></script>
+</head><body onLoad="initUI();">
+  <canvas id="myCanvas" width="800" height="600"></canvas>
+  <div id="settings">
+    <label for="rows">Set the number of rows:</label>
+    <input id="rows" name="value">
+    <label for="columns">Set the number of bricks in each row:</label>
+    <input id="columns" name="value">
+    <fieldset>
+      <legend>Set paddle size: </legend>
+      <label for="pSmall">Small</label>
+      <input type="radio" name="pSmall" id="pSmall">
+      <label for="pMedium">Medium</label>
+      <input type="radio" name="pMedium" id="pMedium">
+      <label for="pLarge">Large</label>
+      <input type="radio" name="pLarge" id="pLarge">
+      <label for="pXLarge">Extra Large</label>
+      <input type="radio" name="pXLarge" id="pXLarge">
+    </fieldset>
+    <label for="setBot">Enable Bot</label>
+    <input type="checkbox" name="setBot" id="setBot">
+    <input type="submit" value="A submit button" onClick="startMain();">
+  </div>
+</body></html>
