@@ -3,5 +3,35 @@ canvas {
     background: #eee;
     display: block;
     margin: 0 auto;
+    position: absolute;
+    width: 600px;
+    height: 500px;
     
 }
+
+#header {
+    
+    width: 800px;
+    background: #eee;
+    text-align: center;
+    
+}
+
+#settings {
+    
+    background-color: aqua;
+    position: absolute;
+    left: 620px;
+    width: 220px;
+    height: 500px;
+    
+}
+
+#radiobox {
+    
+    left: 35;
+    width: 130px;
+    text-align: right;
+    
+}
+

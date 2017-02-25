@@ -3,15 +3,18 @@
 
 window.breakout = function (brickRows, brickColumns) {
     
-    let canvas = document.getElementById('myCanvas');
+    let output = document.getElementById ('output');
+    let canvas = document.getElementById ('mainCanvas');
     let ctx = canvas.getContext('2d');
+    
     let bShift = {x: 2, y: -2};
     let score = 0;
     let ball = {
         
         x: canvas.width/2,
         y: canvas.height - 30,
-        r: 10
+        r: 10,
+        s: (Math.random * Math.PI) + Math.PI
         
     };
     let paddle = {
@@ -57,9 +60,26 @@ window.breakout = function (brickRows, brickColumns) {
     document.addEventListener ('keyup', keyUpHandler, false);
     document.addEventListener ('mousemove', mouseMoveHandler, false);
     
-    setInterval(draw, 10);
+    // requestAnimationFrame (draw);
+    // setInterval (draw, 10)
+    draw();
+    
+    /*
+    ctx.clearRect (0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.moveTo (50, 50);
+    ctx.lineTo (200, 50);
+    ctx.lineTo (200, 200);
+    ctx.lineTo (50, 200);
+    ctx.stroke();
+    */
+    
+    output.innerHTML = 'Canvas width = ', canvas.width,
+            ', canvas height = ', canvas.height;
     
     function draw () {
+        
+        requestAnimationFrame (draw);
         
         ctx.clearRect (0, 0, canvas.width, canvas.height);
         drawBall (ctx, ball);
@@ -79,10 +99,10 @@ window.breakout = function (brickRows, brickColumns) {
         
         if ((ball.x + bShift.x < ball.r) ||
                 (ball.x + bShift.x > canvas.width - ball.r))
-                bShift.x = -bShift.x;
+            bShift.x = -bShift.x;
         
         if (ball.y + bShift.y < ball.r)
-                bShift.y = -bShift.y;
+            bShift.y = -bShift.y;
         
         if (ball.y + bShift.y > canvas.height - ball.r) {
             
@@ -103,31 +123,29 @@ window.breakout = function (brickRows, brickColumns) {
             
         }
         
-        if (rightPressed && paddle.x < canvas.width - paddle.width) {
+        if (rightPressed && paddle.x < canvas.width - paddle.width)
             paddle.x += 7;
-        } else if (leftPressed && paddle.x > 0) {
+        else if (leftPressed && paddle.x > 0)
             paddle.x -= 7;
-        }
+        
     }
     
     
     function keyDownHandler(e) {
-        if(e.keyCode === 39) {
+        if(e.keyCode === 39)
             rightPressed = true;
-        }
-        else if(e.keyCode === 37) {
+        else if(e.keyCode === 37)
             leftPressed = true;
-        }
+        
     }
     
     
     function keyUpHandler(e) {
-        if(e.keyCode === 39) {
+        if(e.keyCode === 39)
             rightPressed = false;
-        }
-        else if(e.keyCode === 37) {
+        else if(e.keyCode === 37)
             leftPressed = false;
-        }
+        
     }
     
     
