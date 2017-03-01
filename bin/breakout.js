@@ -1,23 +1,57 @@
 /* globals window: false */
 /* globals $: false */
 
-window.breakout = function (brickRows, brickColumns) {
+window.breakout = function (brickRows, brickColumns, botState) {
     
-    let output = document.getElementById ('output');
-    let canvas = document.getElementById ('mainCanvas');
-    let ctx = canvas.getContext('2d');
+    const output = document.getElementById ('output');
+    const canvas = document.getElementById ('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const jump = 2;
     
-    let bShift = {x: 2, y: -2};
+    console.log ('botState = ', botState);
+    
     let score = 0;
-    let ball = {
+    
+    const ball = {x: 0, y: 0, r: 0, s: 0};
+    
+    ball.move = function() {
         
-        x: canvas.width/2,
-        y: canvas.height - 30,
-        r: 10,
-        s: (Math.random * Math.PI) + Math.PI
+        console.log ('before move:- x: ', this.x, ', y: ', this.y, ', r: ', this.r, ', s: ', this.s);
+        this.x = this.x + (Math.cos (this.s) * jump);
+        this.y = this.y + (Math.sin (this.s) * jump);
+        console.log ('after move:- x: ', this.x, ', y: ', this.y, ', r: ', this.r, ', s: ', this.s);
         
     };
-    let paddle = {
+    
+    ball.reset = function() {
+        
+        this.x = (getRandomInt (20, canvas.width - 19)),
+        this.y = canvas.height - 30;
+        this.r = 10;
+        this.s = (Math.random() * (Math.PI / 2)) + (Math.PI * 1.25);
+        console.log ('reset:- x: ', this.x, ', y: ', this.y, ', r: ', this.r, ', s: ', this.s);
+        
+    };
+    
+    ball.hBounce = function() {
+        
+        this.s = this.s - ((this.s - Math.PI) * 2)
+        console.log ('hBounce:- x: ', this.x, ', y: ', this.y, ', r: ', this.r, ', s: ', this.s);
+        
+    };
+    
+    ball.vBounce = function() {
+        
+        this.s =  (this.s > Math.PI) ?
+            this.s - ((this.s - (Math.PI * 1.5)) * 2) :
+            this.s - ((this.s - (Math.PI * 0.5)) * 2);
+        console.log ('vBounce:- x: ', this.x, ', y: ', this.y, ', r: ', this.r, ', s: ', this.s);
+        
+    };
+    
+    ball.reset();
+    console.log (JSON.stringify (ball));
+    const paddle = {
         
         x: (canvas.width - 10) / 2,
         y: (canvas.height) - 10,
@@ -29,12 +63,10 @@ window.breakout = function (brickRows, brickColumns) {
     let rightPressed = false;
     let leftPressed = false;
     
-    // let brickRows= bRows;
-    // let brickColumns = 7;
     let brickPadding = 10;
     let brickOffsetTop = 30;
     let brickOffsetLeft = 30;
-    let maxScore = brickRows * brickColumns;
+    // let maxScore = brickRows * brickColumns;
     
     let brickWidth = ((canvas.width - (brickOffsetLeft * 2)) / brickColumns) -
             brickPadding;
@@ -60,19 +92,7 @@ window.breakout = function (brickRows, brickColumns) {
     document.addEventListener ('keyup', keyUpHandler, false);
     document.addEventListener ('mousemove', mouseMoveHandler, false);
     
-    // requestAnimationFrame (draw);
-    // setInterval (draw, 10)
     draw();
-    
-    /*
-    ctx.clearRect (0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    ctx.moveTo (50, 50);
-    ctx.lineTo (200, 50);
-    ctx.lineTo (200, 200);
-    ctx.lineTo (50, 200);
-    ctx.stroke();
-    */
     
     output.innerHTML = 'Canvas width = ', canvas.width,
             ', canvas height = ', canvas.height;
@@ -82,44 +102,39 @@ window.breakout = function (brickRows, brickColumns) {
         requestAnimationFrame (draw);
         
         ctx.clearRect (0, 0, canvas.width, canvas.height);
+        score = score + 1;
         drawBall (ctx, ball);
         drawPaddle (ctx, paddle);
         drawBricks (ctx, bricks);
         drawScore (ctx, score);
         
-        if (score === maxScore) {
+        /* if (score === maxScore) {
             
             alert ('You win!');
             document.location.reload();
             
-        }
+        } */
         
-        ball.x = ball.x + bShift.x;
-        ball.y = ball.y + bShift.y;
+        ball.move();
         
-        if ((ball.x + bShift.x < ball.r) ||
-                (ball.x + bShift.x > canvas.width - ball.r))
-            bShift.x = -bShift.x;
+        if ((ball.x < ball.r) || (ball.x > canvas.width))
+            ball.vBounce();
         
-        if (ball.y + bShift.y < ball.r)
-            bShift.y = -bShift.y;
+        if (ball.y < ball.r)
+            ball.hBounce();
         
-        if (ball.y + bShift.y > canvas.height - ball.r) {
+        if (ball.y > canvas.height - ball.r) {
             
             if ((ball.x > paddle.x) && (ball.x < paddle.x + paddle.width))
-                    bShift.y = -bShift.y;
-            else {
-                
-                alert ('Game Over!');
-                document.location.reload();
-                
-            }
+                ball.hBounce();
+            else ball.reset();
+            
         }
         
         if (detectCollision (bricks, ball)) {
             
             score = score + 1;
-            bShift.y = -bShift.y;
+            ball.hBounce();
             
         }
         
@@ -222,6 +237,15 @@ function drawScore (ctx, score) {
     ctx.font = '16px Arial';
     ctx.fillStyle = '#0095DD';
     ctx.fillText('Score: ' + score, 8, 20);
+    
+}
+
+
+function getRandomInt (min, max) {
+    
+    min = Math.ceil (min);
+    max = Math.floor (max);
+    return Math.floor (Math.random() * (max - min)) + min;
     
 }
 
