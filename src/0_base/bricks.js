@@ -1,121 +1,227 @@
-function createBricks (rows, cols, padding, tlX, tlY, brX, brY) {
+const bricks = {
+    
+    init: false,
+    rows: null,
+    cols: null,
+    padding: null,
+    tlX: null,
+    tlY: null,
+    brX: null,
+    brY: null,
+    isVisible: null,
+    width: null,
+    height: null
+    
+};
+
+
+function resetBricks (
+        {rows = null, cols = null, padding = null, tlX = null, tlY = null,
+                brX = null, brY = null} =
+        {rows: null, cols: null, padding: null, tlX: null, tlY: null,
+                brX: null, brY: null}) {
+    
+    if ((rows === null) ||
+            (cols === null) ||
+            (padding === null) ||
+            (tlX === null) ||
+            (tlY === null) ||
+            (brX === null) ||
+            (brY === null))
+        return null;
+    
+    bricks.rows = rows;
+    bricks.cols = cols;
+    bricks.padding = padding;
+    bricks.tlX = tlX;
+    bricks.tlY = tlY;
+    bricks.brX = brX;
+    bricks.brY = brY;
+    bricks.isVisible = Array (rows * cols).fill (true);
+    bricks.width = ((brX - tlX - (padding * (cols - 1)))/cols);
+    bricks.height = ((brY - tlY - (padding * (rows - 1)))/rows);
+    bricks.init = true;
+    return true;
+    
+}
+    
+function detectCollision (
+        {x = null, y = null, r = null} = {x: null, y: null, r: null}) {
+    
+    if ((x === null) ||
+            (y === null) ||
+            (r === null))
+        return null;
+    
+    const {init, tlX, tlY, brX, brY, width, height, padding,
+            rows, cols, isVisible} = bricks;
+    
+    if (init === false) return null;
+    
+    const ballXMin = x - r;
+    const ballXMax = x + r;
+    const ballYMin = y - r;
+    const ballYMax = y + r;
+    
+    console.log (tlX, brX, tlY, brY);
+    console.log (ballXMin, ballXMax, ballYMin, ballYMax);
+    console.log (ballXMax < tlX, ballXMin > brX,
+            ballYMax < tlY, ballYMin > brY);
+    
+    if ((ballXMax < tlX) ||
+            (ballXMin > brX) ||
+            (ballYMax < tlY) ||
+            (ballYMin > brY))
+        return false;
+    
+    const ctlX = firstLevel (tlX + width,
+            width + padding, ballXMin, true, 0);
+    const ctlY = firstLevel (tlY + height,
+            height + padding, ballYMin, true, 0);
+    const cbrX = firstLevel (brX - width,
+            width + padding, ballXMax, false, cols);
+    const cbrY = firstLevel (brY - height,
+            height + padding, ballYMax, false, rows);
+    
+    console.log (ctlX, ctlY, cbrX, cbrY);
+    
+    let iX = 0;
+    let iY = 0;
+    let i = 0;
+    
+    while (iY < cbrY - ctlY) {
+        
+        iX = 0;
+        
+        while (iX < cbrX - ctlX) {
+            
+            i = (ctlY + iY) * cols + ctlX + iX;
+            
+            if (!isVisible [i]) {
+                
+                iX = iX + 1;
+                continue;
+                
+            }
+            
+            if (((tlX + width + (ctlX + iX) *
+                    (width + padding)) >= ballXMin) &&
+                    ((tlY + width + (ctlY + iY) *
+                    (width + padding)) >= ballYMin)) {
+                
+                isVisible [i] = false;
+                return true;
+                
+            }
+            
+            iX = iX + 1;
+            
+        }
+        
+        iY = iY + 1;
+        
+    }
+    
+    return false;
+    
+}
+
+
+function getBricks () {
+    
+    const {init, rows, cols, isVisible, tlX, tlY, width, height, padding} =
+            bricks;
+    
+    if (init === false) return null;
+    
+    return Array (rows * cols)
+        .fill (void 0)
+        .map ((_, i) => {
+            
+            if (!isVisible [i]) return void 0;
+            
+            return [
+                    tlX + (width + padding) * (i % cols), 
+                    tlY + (height + padding) * (Math.floor (i/cols))
+            ];
+        })
+        .filter (x => !!x);
+        
+}
+
+
+function shuffleBricks () {
+    
+    const {init, rows, cols} = bricks;
+    
+    if (init === false) return null;
+    
+    let {isVisible} = bricks;
+    
+    const lastRow = isVisible
+        .slice (cols * (rows - 1))
+        .some (x => x);
+    
+    if (lastRow) return false;
+    
+    isVisible = (function () {
+        
+        return Array (cols)
+            .fill (true)
+            .concat (isVisible.slice (0, cols * (rows - 1)));
+    
+    }());
+}
+
+
+function firstLevel (base, inc, max, lower, level) {
+    
+    if (!lower && level === 0) return 0;
+    if ((lower && max <= base) || (!lower && max >= base)) return level;
+    if (lower) return firstLevel (base + inc, inc, max, true, level + 1);
+    return firstLevel (base - inc, inc, max, false, level - 1);
+    
+}
+
+
+function getSnapshot () {
+    
+    if (bricks.init === false) return null;
+    
+    const isVisible = Array (bricks.isVisible.length)
+        .fill (void 0)
+        .map ((_, i) => (bricks.isVisible [i]));
     
     return {
         
-        rows,
-        cols,
-        padding,
-        tlX,
-        tlY,
-        brX,
-        brY,
-        isVisible: Array (rows * cols).fill (true),
-        width: ((brX - tlX - (padding * (cols -1)))/cols),
-        height: ((brY - tlY - (padding * (rows -1)))/rows),
-        
-        detectCollision: function (ball) {
-            
-            const ballXMin = ball.x - ball.r;
-            const ballXMax = ball.x + ball.r;
-            const ballYMin = ball.y - ball.r;
-            const ballYMax = ball.y + ball.r;
-            
-            if ((ballXMax < this.tlX) ||
-                    (ballXMin > this.brX) ||
-                    (ballYMax < this.tlY) ||
-                    (ballYMin > this.brY))
-                return false;
-            
-            const ctlX = firstClearLevel (this.tlX + this.width,
-                    this.width + this.padding, ballXMin, 0, true);
-            const ctlY = firstClearLevel (this.tlY + this.height,
-                    this.height + this.padding, ballYMin, 0, true);
-            const cbrX = firstClearLevel (this.brX - this.width,
-                    this.width + this.padding, ballXMax, 0, false);
-            const cbrY = firstClearLevel (this.brY - this.height,
-                    this.height + this.padding, ballYMax, 0, false);
-            
-            let iX = 0;
-            let iY = 0;
-            let i = 0;
-            
-            while (iY < cbrY - ctlY) {
-                
-                iX = 0;
-                
-                while (iX < cbrX - ctlX) {
-                    
-                    i = (ctlY + iY) * this.cols + ctlX + iX;
-                    
-                    if (!this.isVisible [i]) {
-                        
-                        iX = iX + 1;
-                        continue;
-                        
-                    }
-                    
-                    if ((this.tlX + this.width + (ctlX + iX) *
-                            (this.width + this.padding)) >= ballXMin) {
-                        
-                        this.isVisible [i] = false;
-                        return true;
-                        
-                    }
-                    
-                    iX = iX + 1;
-                    
-                }
-                
-                iY = iY + 1;
-                
-            }
-            
-            return false;
-            
-            function firstClearLevel (base, inc, max, accum, lower) {
-                
-                if ((lower && max <= base) || (!lower && max >= base)) return accum;
-                if (lower) 
-                    return firstClearLevel (base + inc, inc, max, accum + 1, true);
-                return firstClearLevel (base - inc, inc, max, accum + 1, false);
-                
-            }
-        },
-        
-        update: function () {
-            
-            const lastRow = this.isVisible
-                .slice (this.cols * (this.rows - 1))
-                .some (x => x);
-            
-            if (!lastRow)
-                this.isVisible = Array (this.cols)
-                    .fill (true)
-                    .concat (this.isVisible.slice (
-                            0, this.cols * (this.rows - 1)));
-            
-        },
-        
-        getBricks: function() {
-            
-            // let i = 0;
-            
-            return Array (this.rows * this.cols)
-                .fill (void 0)
-                .map ((_, i) => {
-                    
-                    if (!this.isVisible [i]) return void 0;
-                    return [];
-                    
-                })
-                .filter (x => !!x);
-            
-        }
+        init: bricks.init,
+        rows: bricks.rows,
+        cols: bricks.cols,
+        padding: bricks.padding,
+        tlX: bricks.tlX,
+        tlY: bricks.tlY,
+        brX: bricks.brX,
+        brY: bricks.brY,
+        isVisible,
+        width: bricks.width,
+        height: bricks.height
         
     };
 }
 
 
-module.exports = createBricks;
-
+module.exports = {
+    
+    resetBricks,
+    detectCollision,
+    getBricks,
+    shuffleBricks,
+    
+    getInternals: () => ({
+        
+        getSnapshot,
+        firstLevel
+        
+    })
+};
 

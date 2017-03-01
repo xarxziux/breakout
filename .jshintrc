@@ -1,0 +1,13 @@
+{
+    "bitwise": true,
+    "eqeqeq": true,
+    "esversion": 6,
+    "latedef": "nofunc",
+    "nocomma": true,
+    "node": true,
+    "nonew": true,
+    "plusplus": true,
+    "undef": true,
+    "unused": true,
+    "varstmt": false
+}

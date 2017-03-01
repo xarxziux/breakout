@@ -4,7 +4,7 @@
   "description": "Modified version of MDN Breakout game",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jshint ./src/test/test.js && node ./src/test/test.js | tap-dot"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/xarxziux/breakout/issues"
   },
-  "homepage": "https://github.com/xarxziux/breakout#readme"
+  "homepage": "https://github.com/xarxziux/breakout#readme",
+  "devDependencies": {
+    "tap-dot": "^1.0.5",
+    "tape": "^4.6.3"
+  },
+  "dependencies": {
+    "type-detect": "^4.0.0"
+  }
 }
