@@ -27,8 +27,11 @@ test ('bricks.js module', function (t) {
     const b4 = bricks.detectCollision (b3, {x: 92, y: 18, r: 2}).newBrick;
     const b5 = bricks.detectCollision (b4, {x: 92, y: 65, r: 2}).newBrick;
     const b6 = bricks.detectCollision (b5, {x: 92, y: 65, r: 2});
+    const b7 = bricks.detectCollision (b6.newBrick, {x: 70, y: 60, r: 2})
+            .newBrick;
+    const b8 = bricks.shuffle (b7);
     
-    t.plan (21);
+    t.plan (29);
     t.equal (typeof bricks, 'object');
     t.equal (typeOf (bricks.init), 'function');
     t.equal (typeOf (bricks.detectCollision), 'function');
@@ -52,6 +55,8 @@ test ('bricks.js module', function (t) {
         true, true, true,
         true, true, true,
         false, true, false]);
+    t.equal (b5.width, exWidth);
+    t.equal (b5.brY, base.brY);
     t.equal (b6.collision, false);
     t.deepEqual (bricks.getXYPositions (b6.newBrick), [
         [65, 20],
@@ -63,6 +68,12 @@ test ('bricks.js module', function (t) {
         [80, 44],
         [65, 56]
     ]);
+    t.equal (b7.isVisible.length, base.rows * base.cols);
+    t.deepEqual (b7.isVisible.slice (-3), [false, false, false]);
+    t.equal (b8.isVisible.length, base.rows * base.cols);
+    t.deepEqual (b8.isVisible.slice (-3), [true, true, true]);
+    t.equal (b8.height, exHeight);
+    t.equal (b8.tlX, base.tlX);
     t.end();
     
 });

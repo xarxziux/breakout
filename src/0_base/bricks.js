@@ -36,7 +36,17 @@ function init (
     return bricks;
     
 }
+
+
+function reset (base, isVisible) {
     
+    const newBricks = Object.create (base);
+    newBricks.isVisible = isVisible;
+    return newBricks;
+    
+}
+
+
 function detectCollision (brick,
         {x = null, y = null, r = null} = {x: null, y: null, r: null}) {
     
@@ -112,7 +122,7 @@ function detectCollision (brick,
                     (width + padding)) >= ballYMin)) {
                 
                 newVis [i] = false;
-                return {newBrick: init (Object.getPrototypeOf (brick),
+                return {newBrick: reset (Object.getPrototypeOf (brick),
                         newVis), collision: true};
                 
             }
@@ -162,10 +172,10 @@ function getXYPositions (
 }
 
 
-function shuffle (
-        {rows = null, cols = null, isVisible = null} =
-        {rows: null, cols: null, isVisible: null}) {
+function shuffle (bricks) {
     
+    const {rows, cols, isVisible} = bricks;
+
     if ((rows === null) ||
             (cols === null) ||
             (isVisible === null))
@@ -177,10 +187,14 @@ function shuffle (
     
     if (lastRow) return isVisible;
     
-    return Array (cols)
-        .fill (true)
-        .concat (isVisible.slice (0, cols * (rows - 1)));
-    
+    return reset (
+        
+        Object.getPrototypeOf (bricks),
+        Array (cols)
+            .fill (true)
+            .concat (isVisible.slice (0, cols * (rows - 1)))
+            
+    );
 }
 
 
@@ -197,6 +211,7 @@ function firstLevel (base, inc, max, lower, level) {
 module.exports = {
     
     init,
+    reset,
     detectCollision,
     getXYPositions,
     shuffle,
