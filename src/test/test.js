@@ -78,3 +78,47 @@ test ('bricks.js module', function (t) {
     
 });
 
+test ('ball.js module', function (t) {
+    
+    const base = {
+        
+        x: 50,
+        y: 50,
+        radius: 100,
+        angle: Math.PI * 1 / 16
+        
+    };
+    
+    const ball = require ('../0_base/ball.js');
+    const gna = ball.getInternals().getNewAngle;
+    const b1 = ball.move (base, 100, 200);
+    const b2 = ball.reset (b1.radius, 200, 300);
+    
+    t.plan (23);
+    t.equal (typeOf (ball), 'Object');
+    t.equal (typeOf (ball.move), 'function');
+    t.equal (typeOf (ball.reset), 'function');
+    t.equal (typeOf (ball.bounce), 'function');
+    t.equal (typeOf (ball.getInternals().getNewAngle), 'function');
+    t.equal (Math.round (b1.x), 148);
+    t.equal (Math.round (b1.y), 70);
+    t.equal (b1.radius, b2.radius);
+    t.equal (b2.y, 270);
+    t.equal (b2.angle >= Math.PI * 5/4, true);
+    t.equal (b2.angle <= Math.PI * 7/4, true);
+    t.equal ((b2.x >= 5) && (b2.x <= 195), true);
+    t.equal (ball.bounce (Math.PI, true), 0);
+    t.equal ((16 * ball.bounce (Math.PI * 9/16, true))/Math.PI, 7);
+    t.equal ((16 * ball.bounce (Math.PI * 9/16, false))/Math.PI, 23);
+    t.equal (Math.round (8 * gna (-10,  30, 100, Math.PI *  1 / 8) / Math.PI), 1);
+    t.equal (Math.round (8 * gna (-10,  30, 100, Math.PI *  5 / 8) / Math.PI), 3);
+    t.equal (Math.round (8 * gna ( 30,  30, 100, Math.PI *  1 / 8) / Math.PI), 1);
+    t.equal (Math.round (8 * gna ( 10, -30, 100, Math.PI *  1 / 8) / Math.PI), 1);
+    t.equal (Math.round (8 * gna ( 10, -30, 100, Math.PI *  9 / 8) / Math.PI), 7);
+    t.equal (Math.round (8 * gna ( 10, -30, 100, Math.PI * 11 / 8) / Math.PI), 5);
+    t.equal (Math.round (8 * gna ( 120, 30, 100, Math.PI *  1 / 8) / Math.PI), 7);
+    t.equal (Math.round (8 * gna ( 120, 30, 100, Math.PI *  9 / 8) / Math.PI), 9);
+    t.end();
+    
+});
+

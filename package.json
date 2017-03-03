@@ -18,7 +18,8 @@
   "homepage": "https://github.com/xarxziux/breakout#readme",
   "devDependencies": {
     "tap-dot": "^1.0.5",
-    "tape": "^4.6.3"
+    "tape": "^4.6.3",
+    "workerjs": "^0.1.1"
   },
   "dependencies": {
     "type-detect": "^4.0.0"
